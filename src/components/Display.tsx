@@ -9,23 +9,17 @@ interface Props {
 }
 
 export default function Display({ darkMode }: Props) {
-  // State variables for facial data output
   const [gender, setGender] = useState("");
   const [genderProb, setGenderProb] = useState(0);
   const [topEmotion, setTopEmotion] = useState("");
   const [emotionConfidence, setEmotionConfidence] = useState(0);
   const [age, setAge] = useState(0);
 
-  // Access webcam stream from context
   const { stream, error } = useContext(WebcamContext);
-
-  // Refs for the video and canvas elements
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-
   const [modelsLoaded, setModelsLoaded] = useState(false);
 
-  // Load FaceAPI models from the /models directory once when component mounts
   useEffect(() => {
     const loadModels = async () => {
       const MODEL_URL = "/models";
@@ -45,7 +39,6 @@ export default function Display({ darkMode }: Props) {
     loadModels();
   }, []);
 
-  // Attach the webcam stream to the <video> element once it's available
   useEffect(() => {
     if (videoRef.current && stream) {
       videoRef.current.srcObject = stream;
@@ -54,7 +47,6 @@ export default function Display({ darkMode }: Props) {
     }
   }, [stream]);
 
-  // Detect faces and draw results continuously using requestAnimationFrame
   useEffect(() => {
     let animationId: number;
 
@@ -68,83 +60,73 @@ export default function Display({ darkMode }: Props) {
         const video = videoRef.current;
         const canvas = canvasRef.current;
 
-        // Match canvas size to video feed dimensions
         const displaySize = {
           width: video.videoWidth,
           height: video.videoHeight,
         };
+
         canvas.width = displaySize.width;
         canvas.height = displaySize.height;
         faceapi.matchDimensions(canvas, displaySize);
 
-        // Run face detection and include age, gender, and expressions
         const detections = await faceapi
           .detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
           .withAgeAndGender()
           .withFaceExpressions();
 
         const resized = faceapi.resizeResults(detections, displaySize);
-
         const ctx = canvas.getContext("2d", { willReadFrequently: true });
         if (!ctx) return;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // Process each detected face
         resized.forEach(
           ({ detection, age, gender, genderProbability, expressions }) => {
             const { x, y, width, height } = detection.box;
-
-            // Extract the most confident emotion
             const sortedExpressions = Object.entries(expressions).sort(
               (a, b) => b[1] - a[1]
             );
             const emotion = sortedExpressions[0][0];
             const emotionProb = sortedExpressions[0][1];
 
-            // Update states for display in the UI
             setGender(gender);
             setGenderProb(genderProbability);
             setTopEmotion(emotion);
             setEmotionConfidence(emotionProb);
             setAge(age);
 
-            // Draw bounding box and label text on canvas
             const label = `Age: ${age.toFixed(0)}, Gender: ${gender} (${(
               genderProbability * 100
             ).toFixed(0)}%), Emotion: ${emotion}`;
+
             ctx.strokeStyle = "lime";
             ctx.lineWidth = 2;
             ctx.strokeRect(x, y, width, height);
-            ctx.font = "16px sans-serif";
+
+            ctx.font = "14px sans-serif";
             ctx.fillStyle = "lime";
             ctx.fillText(label, x, y - 10);
           }
         );
       }
 
-      // Repeat detection on next animation frame
       animationId = requestAnimationFrame(detectFaces);
     };
 
-    // Start detection if models are loaded and webcam is active
     if (modelsLoaded && stream) {
       animationId = requestAnimationFrame(detectFaces);
     }
 
-    // Cleanup on unmount
     return () => cancelAnimationFrame(animationId);
   }, [modelsLoaded, stream]);
 
   return (
     <div className="text-center d-flex flex-column align-items-center position-relative w-100">
-      <div className="fs-5 fw-semibold mb-2">Webcam View</div>
+      <div className="fs-6 fw-semibold mb-1">Webcam View</div>
       {stream && <span className="badge bg-success mb-2">Webcam On</span>}
 
-      {/* Container for webcam and overlay canvas */}
-      <div style={{ position: "relative", width: "100%", maxWidth: "720px" }}>
+      <div style={{ position: "relative", width: "100%", maxWidth: "480px" }}>
         {stream ? (
           <>
-            {/* Video feed */}
             <video
               ref={videoRef}
               autoPlay
@@ -157,7 +139,6 @@ export default function Display({ darkMode }: Props) {
                 zIndex: 1,
               }}
             />
-            {/* Canvas overlay for drawing face data */}
             <canvas
               ref={canvasRef}
               style={{
@@ -192,7 +173,7 @@ export default function Display({ darkMode }: Props) {
         )}
       </div>
 
-      {/* Pass face data to Information section below webcam */}
+      {/* Info chart below webcam */}
       <div className="mt-3 w-100 d-flex justify-content-center">
         <Information
           gender={gender}
