@@ -1,54 +1,146 @@
-# React + TypeScript + Vite
+# 👁️‍🗨️ FaceVision: Real-Time Face Detection and Analysis
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A responsive React web application for **real-time face detection**, **age**, **gender**, and **emotion** recognition using **face-api.js** and webcam integration. Powered by a clean UI, modern React components, and hosted seamlessly on **Vercel**.
 
-Currently, two official plugins are available:
+🔗 **Live Demo:** [https://face-detection-two-wheat.vercel.app/](https://face-detection-two-wheat.vercel.app/)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## Expanding the ESLint configuration
+## ✨ Features
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- 🔍 Real-time face detection via webcam
+- 🧠 Emotion recognition (happy, sad, angry, etc.)
+- 👦 Gender prediction with confidence %
+- 🎂 Age estimation
+- 🎨 Responsive UI with dark/light mode toggle
+- 📦 Modular, reusable React components
+- 🚀 Hosted on **Vercel** with zero config deployment
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-});
+---
+
+## 🛠 Tech Stack
+
+| Category        | Tools & Libraries                                                                 |
+|-----------------|------------------------------------------------------------------------------------|
+| **Frontend**    | React, TypeScript, Vite                                                           |
+| **Styling**     | Tailwind CSS, Bootstrap                                                          |
+| **Icons**       | React Icons                                                                      |
+| **AI/ML Models**| [face-api.js](https://github.com/justadudewhohacks/face-api.js)                  |
+| **Deployment**  | **Vercel** – seamless integration with GitHub for CI/CD                          |
+| **Other**       | HTML5 Media APIs (getUserMedia), React Context API                               |
+
+---
+
+## 📁 Folder Structure
+
+Face-detection/
+├── public/
+│ ├── models/ # FaceAPI model files (age, gender, emotion, detection)
+│ │ ├── age_gender_model/
+│ │ ├── face_expression/
+│ │ └── tiny_face_detector/
+│ └── index.html
+├── src/
+│ ├── components/
+│ │ ├── Navbar.tsx # Top navigation bar with theme toggle
+│ │ ├── Toggle.tsx # Dark/light mode toggle
+│ │ ├── Display.tsx # Webcam video + canvas overlay + detection logic
+│ │ ├── Information.tsx # Circular progress indicators for predictions
+│ │ ├── Upload.tsx # (Optional) Image/video upload handler
+│ │ └── Footer.tsx # Footer with copyright
+│ ├── context/
+│ │ └── WebcamContext.tsx # Global webcam stream state
+│ ├── App.tsx # Main layout wrapper
+│ ├── main.tsx # App entry point
+│ └── App.css # Global styles
+├── .gitignore
+├── package.json
+├── tailwind.config.js
+└── README.md
+
+
+
+---
+
+## 🧠 How It Works
+
+1. Loads face-api.js models from `/public/models`
+2. Accesses webcam stream with `navigator.mediaDevices.getUserMedia`
+3. Runs face detection every frame using `TinyFaceDetector`
+4. Uses `withAgeAndGender()` and `withFaceExpressions()` to extract:
+   - Age (approximate)
+   - Gender (male/female with confidence)
+   - Emotion (happy, sad, angry, neutral, etc.)
+5. Draws bounding boxes and overlays labels on a canvas
+6. Sends predictions to `Information.tsx` to render live circular progress bars
+
+---
+
+## 🖥️ Local Setup
+
+### Prerequisites
+
+- Node.js (v18+ recommended)
+- npm or yarn
+- Git
+
+### Steps
+
+```bash
+# 1. Clone the repo
+git clone https://github.com/Vaibhaverma-1/Face-detection.git
+cd Face-detection
+
+# 2. Install dependencies
+npm install
+
+# 3. Place the model files inside public/models
+# (Download from face-api.js GitHub or link externally)
+
+# 4. Run development server
+npm run dev
 ```
+## 🚀 Deployment
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+This project is deployed using [**Vercel**](https://vercel.com), a platform for frontend frameworks and static sites, built to integrate with Git.
 
-```js
-// eslint.config.js
-import reactX from "eslint-plugin-react-x";
-import reactDom from "eslint-plugin-react-dom";
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    "react-x": reactX,
-    "react-dom": reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs["recommended-typescript"].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-});
-```
+Steps to Deploy:
+Go to https://vercel.com
+
+Connect your GitHub account
+
+Import your repository Face-detection
+
+Set:
+
+Framework: Vite / React
+
+Build Command: npm run build
+
+Output Directory: dist
+
+Click Deploy
+
+Vercel will handle CI/CD automatically and host your site on a live URL like:
+
+🔗 https://face-detection-two-wheat.vercel.app/
+
+📸 Screenshots
+You can add screenshots or screen recordings here for visual representation.
+
+📄 License
+This project is open source under the MIT License.
+
+🙋‍♂️ Author
+Vaibhav Verma
+Third-year B.Tech CSE @ KIIT
+GitHub Profile
+
+⭐️ Acknowledgements
+face-api.js – for deep learning models in the browser
+
+Vercel – for blazing-fast React app hosting
+
+Bootstrap + Tailwind – for responsive design
+
